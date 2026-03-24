@@ -1,8 +1,8 @@
 # Robocorp robot config — see https://github.com/robocorp/rcc/blob/master/docs/recipes.md#what-is-in-robotyaml
 
 tasks:
-  browser_demo:
-    shell: python -m robocorp.tasks run tasks.py
+  energy_production:
+    shell: uv run python -m robocorp.tasks run tasks.py
 
 environmentConfigs:
   - conda.yaml
