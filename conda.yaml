@@ -1,4 +1,5 @@
-# RCC builds this env first; the robot task then uses `uv run` + pyproject.toml / uv.lock.
+# RCC builds this conda environment; all Python deps are installed here so the
+# task shell can run `python -m robocorp.tasks run tasks.py` directly without uv.
 # https://github.com/robocorp/rcc/blob/master/docs/recipes.md#what-is-in-condayaml
 
 channels:
@@ -6,4 +7,14 @@ channels:
 
 dependencies:
   - python=3.12.13
-  - uv=0.10.9
+  - pip=24.0
+  - pip:
+    - chardet>=3.0.2,<6
+    - playwright>=1.58.0
+    - python-dotenv>=1.0.0
+    - robocorp>=3.1.1
+    - robocorp-browser>=2.0.0
+    - rpaframework>=31.2.0
+
+postInstall:
+  - playwright install chromium
