@@ -371,7 +371,6 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "robocorp" },
     { name = "robocorp-browser" },
-    { name = "robocorp-truststore" },
     { name = "rpaframework" },
 ]
 
@@ -382,7 +381,6 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "robocorp", specifier = ">=3.1.1" },
     { name = "robocorp-browser", specifier = ">=2.0.0" },
-    { name = "robocorp-truststore", specifier = ">=0.3.0" },
     { name = "rpaframework", specifier = ">=31.2.0" },
 ]
 
@@ -1615,15 +1613,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ae/9f/8b75b0bdfb872175fc133be0acc2235458e842b48609d1766649805e58fa/robocorp_tasks-4.1.1.tar.gz", hash = "sha256:fb254020133c89b4a5015ad0f4a13dfceeb6f68eb2459d5291fe8ce975307c94", size = 34055, upload-time = "2026-03-13T12:35:43.216Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/80/e0/5917d07db19ead1be1a5b9a926a752e6a96d284ceaf1275fbd4bbcfddf68/robocorp_tasks-4.1.1-py3-none-any.whl", hash = "sha256:8d2b69f342db58e6cf5f5adb83c63ab2c7485620a4af670fd67efeca9f86543d", size = 42290, upload-time = "2026-03-13T12:35:41.525Z" },
-]
-
-[[package]]
-name = "robocorp-truststore"
-version = "0.9.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/16/44/1a723f5079d842cef35523c0fd3e99ff1e072df5c34d6e777ad5c76f4b69/robocorp_truststore-0.9.1.tar.gz", hash = "sha256:a1abfd9c5b7fe22152a8eeb9510812800dca741851c720742c598c0f78ee4f3f", size = 29345, upload-time = "2024-07-04T08:40:43.437Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/24/60/8a3965aa9dd707eab8d489589360a28960ae53889c60b72d149dbce6455b/robocorp_truststore-0.9.1-py3-none-any.whl", hash = "sha256:dfdd4812dffce8a91134e8b69a3c55072fc9785dbdd583d4047f323779ac2f39", size = 17503, upload-time = "2024-07-04T08:40:41.336Z" },
 ]
 
 [[package]]

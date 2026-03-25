@@ -1,4 +1,6 @@
 import os
+import subprocess
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -24,8 +26,11 @@ class Process:
         self.playwright = playwright
 
     def start(self):
-        logger.info("Configuring browser (install=True)")
-
+        logger.info("Installing Playwright Chromium browser")
+        subprocess.run(
+            ["playwright", "install", "chromium"],
+            check=True
+        )
         self.browser = self.playwright.chromium.launch()
         page = self.browser.new_page()
         
