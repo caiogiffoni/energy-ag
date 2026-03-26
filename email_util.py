@@ -11,7 +11,7 @@ def send_email_with_image(
     to_addr: str,
     subject: str,
     body: str,
-    image_path: Path,
+    image_path: Path | list[Path],
     smtp_host: str | None = None,
     smtp_port: int | None = None,
     smtp_user: str | None = None,
@@ -30,13 +30,14 @@ def send_email_with_image(
     msg["To"] = to_addr
     msg.set_content(body)
 
-    data = image_path.read_bytes()
-    msg.add_attachment(
-        data,
-        maintype="image",
-        subtype="png",
-        filename=image_path.name,
-    )
+    paths = image_path if isinstance(image_path, list) else [image_path]
+    for p in paths:
+        msg.add_attachment(
+            p.read_bytes(),
+            maintype="image",
+            subtype=p.suffix.lstrip(".") or "png",
+            filename=p.name,
+        )
 
     with smtplib.SMTP(smtp_host, smtp_port) as smtp:
         smtp.starttls()
