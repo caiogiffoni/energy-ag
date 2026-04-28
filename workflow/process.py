@@ -45,14 +45,16 @@ class Process:
                 logger.info("Sending email to %s", to_addr)
                 send_email_with_image(
                     to_addr=to_addr,
-                    subject=f"Production: Weg: {weg_production} kWh, Saj: {saj_production} kWh",
+                    subject=f"Weg: {weg_production} kWh, II: {float(saj_production) + float(solis_production)} kWh",
                     body=(
                         f"WEG production (kWh): {weg_production}\n"
                         f"Saj production (kWh): {saj_production}\n"
+                        f"Solis production (kWh): {solis_production}\n"
                         f"Screenshot: {weg_shot.name} (attached)\n"
                         f"Screenshot: {saj_shot.name} (attached)\n"
+                        f"Screenshot: {solis_shot.name} (attached)\n"
                     ),
-                    image_path=[weg_shot, saj_shot],
+                    image_path=[weg_shot, saj_shot, solis_shot],
                     smtp_host=secret_or_env("SMTP_HOST"),
                     smtp_port=int(secret_or_env("SMTP_PORT") or "587"),
                     smtp_user=smtp_user,

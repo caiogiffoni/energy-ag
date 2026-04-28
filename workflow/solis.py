@@ -4,6 +4,7 @@ from pathlib import Path
 from playwright.sync_api import expect
 logger = get_logger(__name__)
 from time import sleep
+import re
 
 class Solis:
     def __init__(self):
@@ -22,22 +23,36 @@ class Solis:
         page.locator(".el-checkbox.el-checkbox--default.el-tooltip__trigger > .el-checkbox__input > .el-checkbox__inner").click()
         page.get_by_role("button", name="Login").click()
 
-        logger.info("Waiting for dashboard column")
-        page.locator("div.is-scrolling-left table tbody tr.el-table__row").click()
-        production = page.locator(
-            "p.item-title:has-text('Daily Yield') ~ div.item-content span.f__24"
+        logger.info("Waiting for dashboard")
+        daily = page.locator("div").filter(has_text=re.compile(r"^Daily Yield$")).first
+        expect(daily).to_be_visible(timeout=60000)
+        with page.expect_popup() as page1_info:
+            page.locator("div").filter(has_text=re.compile(r"^STATION_NAME$")).nth(1).click()
+        new_page = page1_info.value
+        production = new_page.locator(
+            "div.feature-content"
         )
         
         expect(production).to_be_visible(timeout=60000)
 
-        solis_production = production.inner_text()
+        solis_production = new_page.locator(".electrical-info-item").filter(has_text="Daily Yield").locator(".f__24").inner_text()
         logger.info("Solis production: %s kWh", solis_production)
 
         out = Path(secret_or_env("ROBOT_ARTIFACTS", "output"))
         out.mkdir(parents=True, exist_ok=True)
         shot = out / "solis_energy_data.png"
         sleep(5)
-        page.locator("div.station-echarts").screenshot(path=shot)
+        production.screenshot(path=shot)
         logger.info("Screenshot saved to %s", shot)
 
         return solis_production, solis_production, shot
+
+if __name__ == "__main__":
+    from playwright.sync_api import sync_playwright
+    from dotenv import load_dotenv
+    load_dotenv()
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        page = browser.new_page()
+        solis = Solis()
+        solis.get_production(page)
