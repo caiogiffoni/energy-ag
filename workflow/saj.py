@@ -1,5 +1,6 @@
 from secrets_util import secret_or_env
 from libraries.logger import get_logger
+from libraries.decorators import screenshot_on_error
 from pathlib import Path
 from playwright.sync_api import expect
 logger = get_logger(__name__)
@@ -12,6 +13,7 @@ class Saj:
         self.password = secret_or_env("SAJ_PASSWORD")
 
 
+    @screenshot_on_error("saj")
     def get_production(self, page) -> tuple[str, str, Path]:
         logger.info("Navigating to %s", self.url)
         page.goto(self.url, wait_until="domcontentloaded")
