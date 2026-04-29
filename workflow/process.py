@@ -6,6 +6,7 @@ from libraries.logger import get_logger
 from secrets_util import secret_or_env
 from workflow.saj import Saj
 from workflow.weg import Weg
+from workflow.growatt import Growatt
 from workflow.solis import Solis
 logger = get_logger(__name__)
 
@@ -21,10 +22,10 @@ class Process:
 
     def start(self):
         logger.info("Installing Playwright Chromium browser")
-        # subprocess.run(
-            # ["playwright", "install", "chromium"],
-            # check=True
-        # )
+        subprocess.run(
+            ["playwright", "install", "chromium"],
+            check=True
+        )
         self.browser = self.playwright.chromium.launch()
         page = self.browser.new_page()
         
@@ -37,19 +38,24 @@ class Process:
         solis = Solis()
         solis_production, solis_title, solis_shot = solis.get_production(page)
 
+        growatt = Growatt()
+        growatt_production, growatt_title, growatt_shot = growatt.get_production()
+
         to_addr = secret_or_env("EMAIL_TO")
         if to_addr:
             smtp_user = secret_or_env("SMTP_USER")
             smtp_password = secret_or_env("SMTP_PASSWORD")
             if smtp_user and smtp_password:
                 logger.info("Sending email to %s", to_addr)
+                inversor2 = round(float(saj_production) + float(solis_production) + float(growatt_production), 2)
                 send_email_with_image(
                     to_addr=to_addr,
-                    subject=f"Weg: {weg_production} kWh, II: {float(saj_production) + float(solis_production)} kWh",
+                    subject=f"Weg: {weg_production} kWh, II: {inversor2} kWh",
                     body=(
                         f"WEG production (kWh): {weg_production}\n"
                         f"Saj production (kWh): {saj_production}\n"
                         f"Solis production (kWh): {solis_production}\n"
+                        f"Growatt production (kWh): {growatt_production}\n"
                         f"Screenshot: {weg_shot.name} (attached)\n"
                         f"Screenshot: {saj_shot.name} (attached)\n"
                         f"Screenshot: {solis_shot.name} (attached)\n"
