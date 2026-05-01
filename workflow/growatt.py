@@ -29,6 +29,6 @@ class Growatt:
             }
         )
 
-        eac_today = response.json()["data"]["datas"][0]["eacToday"]
+        eac_today = round(response.json()["data"]["datas"][0]["eacToday"], 2)
 
         return eac_today, "", ""
