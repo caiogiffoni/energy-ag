@@ -1,4 +1,5 @@
 import functools
+from datetime import datetime
 from pathlib import Path
 
 from libraries.logger import get_logger
@@ -19,7 +20,8 @@ def screenshot_on_error(name: str):
             except Exception:
                 out = Path(secret_or_env("ROBOT_ARTIFACTS", "output"))
                 out.mkdir(parents=True, exist_ok=True)
-                error_shot = out / f"{name}_error.png"
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                error_shot = out / f"{name}_error_{timestamp}.png"
                 page.screenshot(path=error_shot, full_page=True)
                 logger.error("%s scraper failed — error screenshot saved to %s", name, error_shot)
                 raise
