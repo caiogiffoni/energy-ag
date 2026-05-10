@@ -1,10 +1,53 @@
-"""
-"""
+import json
+from datetime import date
 
 from email_util import send_email_with_image
 from libraries.logger import get_logger
-logger = get_logger(__name__)
 from secrets_util import secret_or_env
+
+logger = get_logger(__name__)
+
+
+def _get_gspread_client():
+    import gspread
+
+    creds_value = secret_or_env("GOOGLE_CREDENTIALS_JSON")
+    if not creds_value:
+        return None
+    if creds_value.strip().startswith("{"):
+        return gspread.service_account_from_dict(json.loads(creds_value))
+    return gspread.service_account(filename=creds_value)
+
+
+def post_to_sheets(weg, saj, solis, growatt):
+    sheet_id = secret_or_env("GOOGLE_SHEET_ID")
+    if not sheet_id:
+        logger.info("GOOGLE_SHEET_ID not set — Sheets post skipped")
+        return
+
+    gc = _get_gspread_client()
+    if gc is None:
+        logger.info("GOOGLE_CREDENTIALS_JSON not set — Sheets post skipped")
+        return
+
+    ws = gc.open_by_key(sheet_id).sheet1
+    today_str = date.today().strftime("%d/%m/%Y")
+
+    all_rows = ws.get_all_values()
+    data_rows = all_rows[1:]  # skip header
+
+    if data_rows and data_rows[-1][0] == today_str:
+        row_num = len(all_rows)  # overwrite last row
+        logger.info("Today's row already exists — overwriting row %d", row_num)
+    else:
+        row_num = len(all_rows) + 1  # append new row
+        logger.info("Appending new row %d for %s", row_num, today_str)
+
+    # Write A:C (date, weg, formula) and G:I (saj, solis, growatt). D:F stay empty.
+    formula = f"=G{row_num}+H{row_num}+I{row_num}"
+    ws.update(f"A{row_num}:C{row_num}", [[today_str, weg, formula]], value_input_option="USER_ENTERED")
+    ws.update(f"G{row_num}:I{row_num}", [[saj, solis, growatt]])
+    logger.info("Posted to Google Sheets row %d", row_num)
 
 
 def send_generated_energy_email(weg_info: tuple[str, str, str], saj_info: tuple[str, str, str], solis_info: tuple[str, str, str], growatt_info: tuple[str, str, str]):
@@ -23,6 +66,7 @@ def send_generated_energy_email(weg_info: tuple[str, str, str], saj_info: tuple[
             logger.info("SMTP_USER or SMTP_PASSWORD not set — email skipped")
             return
         inversor2 = round(float(saj_production) + float(solis_production) + float(growatt_production), 2)
+        post_to_sheets(weg_production, saj_production, solis_production, growatt_production)
         recipients = [addr.strip() for addr in to_addr.split(",") if addr.strip()]
         for recipient in recipients:
             logger.info("Sending email to %s", recipient)
@@ -46,3 +90,9 @@ def send_generated_energy_email(weg_info: tuple[str, str, str], saj_info: tuple[
                 from_addr=secret_or_env("EMAIL_FROM") or smtp_user,
             )
             logger.info("Email sent to %s", recipient)
+
+
+if __name__ == "__main__":
+    from dotenv import load_dotenv
+    load_dotenv()
+    post_to_sheets(weg=555.99, saj=555, solis=555, growatt=555)
