@@ -1,4 +1,4 @@
-from secrets_util import secret_or_env
+from utils.secrets_util import secret_or_env
 from libraries.logger import get_logger
 from libraries.decorators import screenshot_on_error
 from pathlib import Path

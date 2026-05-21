@@ -1,10 +1,10 @@
 import subprocess
 import sys
 
-from email_util import send_email_with_image
+from utils.email_util import send_email_with_image
 from libraries.logger import get_logger
-from libraries.utils import send_generated_energy_email
-from secrets_util import secret_or_env
+from utils.utils import send_generated_energy_email
+from utils.secrets_util import secret_or_env
 from workflow.saj import Saj
 from workflow.weg import Weg
 from workflow.growatt import Growatt

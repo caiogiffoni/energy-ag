@@ -1,6 +1,6 @@
 import requests
 from datetime import date
-from secrets_util import secret_or_env
+from utils.secrets_util import secret_or_env
 
 
 from libraries.logger import get_logger

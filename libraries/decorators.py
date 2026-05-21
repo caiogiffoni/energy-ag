@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 
 from libraries.logger import get_logger
-from secrets_util import secret_or_env
+from utils.secrets_util import secret_or_env
 
 logger = get_logger(__name__)
 
