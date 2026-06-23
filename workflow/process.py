@@ -1,14 +1,15 @@
 import subprocess
 import sys
 
-from utils.email_util import send_email_with_image
 from libraries.logger import get_logger
-from utils.utils import send_generated_energy_email
+from utils.email_util import send_email_with_image
 from utils.secrets_util import secret_or_env
-from workflow.saj import Saj
-from workflow.weg import Weg
+from utils.utils import send_generated_energy_email
 from workflow.growatt import Growatt
+from workflow.saj import Saj
 from workflow.solis import Solis
+from workflow.weg import Weg
+
 logger = get_logger(__name__)
 
 
@@ -45,8 +46,8 @@ class Process:
 
 
 if __name__ == "__main__":
-    from playwright.sync_api import expect, sync_playwright
     from dotenv import load_dotenv
+    from playwright.sync_api import expect, sync_playwright
     load_dotenv()
     with sync_playwright() as p:
         process = Process(p)
