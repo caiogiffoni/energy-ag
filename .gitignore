@@ -213,3 +213,6 @@ temp/
 testrun/
 */work-items-out/*
 .~lock*
+
+# GCP credentials
+service-account/

@@ -19,7 +19,6 @@ class Process:
         self.browser = None
         self.email_to = secret_or_env("EMAIL_TO")
         self.email_from = secret_or_env("EMAIL_FROM")
-        self.playwright = playwright
 
     def start(self):
         logger.info("Installing Playwright Chromium browser")
