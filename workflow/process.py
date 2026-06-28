@@ -1,6 +1,3 @@
-import subprocess
-import sys
-
 from libraries.logger import get_logger
 from utils.email_util import send_email_with_image
 from utils.secrets_util import secret_or_env
@@ -22,12 +19,7 @@ class Process:
         self.email_from = secret_or_env("EMAIL_FROM")
 
     def start(self):
-        logger.info("Installing Playwright Chromium browser")
-        subprocess.run(
-            ["playwright", "install", "chromium"],
-            check=True
-        )
-        self.browser = self.playwright.chromium.launch()
+        self.browser = self.playwright.chromium.launch(headless=False)
         page = self.browser.new_page()
         
         weg = Weg()
