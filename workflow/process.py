@@ -1,3 +1,7 @@
+import os
+import subprocess
+from pathlib import Path
+
 from libraries.logger import get_logger
 from utils.email_util import send_email_with_image
 from utils.secrets_util import secret_or_env
@@ -11,15 +15,22 @@ logger = get_logger(__name__)
 
 
 class Process:
-    """Open Chromium, visit a page, assert the title — minimal Playwright smoke task."""
     def __init__(self, playwright):
         self.playwright = playwright
         self.browser = None
         self.email_to = secret_or_env("EMAIL_TO")
         self.email_from = secret_or_env("EMAIL_FROM")
 
+    def _ensure_chromium(self):
+        cache = Path.home() / ".cache" / "ms-playwright"
+        if not any(cache.glob("chromium-*/chrome-linux64/chrome")):
+            logger.info("Chromium not found — installing via playwright")
+            subprocess.run(["playwright", "install", "chromium"], check=True)
+
     def start(self):
-        self.browser = self.playwright.chromium.launch(headless=False)
+        self._ensure_chromium()
+        headless = os.environ.get("HEADLESS", "true").lower() != "false"
+        self.browser = self.playwright.chromium.launch(headless=headless)
         page = self.browser.new_page()
         
         weg = Weg()
