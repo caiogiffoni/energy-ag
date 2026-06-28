@@ -11,9 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Upload robot to Control Room
-        uses: robocorp/action-upload-robot@v1
-        with:
-          workspace-key: ${{ secrets.ROBOCORP_WORKSPACE_KEY }}
-          workspace-id: ${{ secrets.ROBOCORP_WORKSPACE_ID }}
-          robot-id: ${{ secrets.ROBOCORP_ROBOT_ID }}
+      - name: Install rcc
+        run: |
+          curl -o rcc https://downloads.robocorp.com/rcc/releases/latest/linux64/rcc
+          chmod +x rcc
+
+      - name: Deploy to Control Room
+        run: ./rcc cloud push --account "${{ secrets.ROBOCORP_CREDENTIALS }}" --workspace "${{ secrets.ROBOCORP_WORKSPACE_ID }}" --robot "${{ secrets.ROBOCORP_ROBOT_ID }}"
