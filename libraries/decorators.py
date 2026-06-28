@@ -2,10 +2,31 @@ import functools
 from datetime import datetime
 from pathlib import Path
 
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+
 from libraries.logger import get_logger
 from utils.secrets_util import secret_or_env
 
 logger = get_logger(__name__)
+
+
+def retry_on_timeout(retries: int = 2, base_timeout: int = 60_000, timeout_multiplier: float = 2.0):
+    """Retries on Playwright TimeoutError, passing an increasing `timeout` kwarg each attempt."""
+    def decorator(fn):
+        @functools.wraps(fn)
+        def wrapper(self, page, *args, **kwargs):
+            timeout = base_timeout
+            for attempt in range(retries + 1):
+                logger.info("Attempt %d/%d with timeout %dms", attempt + 1, retries + 1, timeout)
+                try:
+                    return fn(self, page, *args, timeout=timeout, **kwargs)
+                except PlaywrightTimeoutError:
+                    if attempt == retries:
+                        raise
+                    timeout = int(timeout * timeout_multiplier)
+                    logger.warning("Attempt %d/%d timed out — retrying with %dms", attempt + 1, retries + 1, timeout)
+        return wrapper
+    return decorator
 
 
 def screenshot_on_error(name: str):

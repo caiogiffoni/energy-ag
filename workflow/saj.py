@@ -1,6 +1,6 @@
 from utils.secrets_util import secret_or_env
 from libraries.logger import get_logger
-from libraries.decorators import screenshot_on_error
+from libraries.decorators import retry_on_timeout, screenshot_on_error
 from pathlib import Path
 from playwright.sync_api import expect
 logger = get_logger(__name__)
@@ -14,9 +14,10 @@ class Saj:
 
 
     @screenshot_on_error("saj")
-    def get_production(self, page) -> tuple[str, str, Path]:
+    @retry_on_timeout(retries=2, base_timeout=60_000, timeout_multiplier=2.0)
+    def get_production(self, page, timeout: int = 60_000) -> tuple[str, str, Path]:
         logger.info("Navigating to %s", self.url)
-        page.goto(self.url, wait_until="domcontentloaded", timeout=90_000)
+        page.goto(self.url, wait_until="domcontentloaded", timeout=timeout)
 
         logger.info("Logging in")
         page.get_by_role("textbox", name="Username/Email").fill(self.login or "")
@@ -27,7 +28,7 @@ class Saj:
         production = page.locator(
             "p.tip:has-text(\"Today's production\") + p.value span:first-child"
         )
-        expect(production).to_be_visible(timeout=60000)
+        expect(production).to_be_visible(timeout=timeout)
 
         saj_production = production.inner_text()
         logger.info("Saj production: %s kWh", saj_production)
