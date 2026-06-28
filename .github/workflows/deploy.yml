@@ -13,7 +13,7 @@ jobs:
 
       - name: Install rcc
         run: |
-          curl -o rcc https://downloads.robocorp.com/rcc/releases/latest/linux64/rcc
+          curl -fsSL -o rcc https://downloads.robocorp.com/rcc/releases/v21.2.0/linux64/rcc
           chmod +x rcc
 
       - name: Deploy to Control Room
