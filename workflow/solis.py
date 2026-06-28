@@ -1,11 +1,15 @@
-from utils.secrets_util import secret_or_env
-from libraries.logger import get_logger
-from libraries.decorators import screenshot_on_error
 from pathlib import Path
+
 from playwright.sync_api import expect
+
+from libraries.decorators import screenshot_on_error
+from libraries.logger import get_logger
+from utils.secrets_util import secret_or_env
+
 logger = get_logger(__name__)
-from time import sleep
 import re
+from time import sleep
+
 
 class Solis:
     def __init__(self):
@@ -55,8 +59,8 @@ class Solis:
         return solis_production, solis_production, shot
 
 if __name__ == "__main__":
-    from playwright.sync_api import sync_playwright
     from dotenv import load_dotenv
+    from playwright.sync_api import sync_playwright
     load_dotenv()
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
