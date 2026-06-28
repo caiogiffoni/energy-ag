@@ -93,6 +93,7 @@ libraries/
 | `FUSION_URL/LOGIN/PASSWORD` | WEG/Huawei FusionSolar |
 | `SAJ_URL/LOGIN/PASSWORD` | SAJ portal |
 | `SOLIS_URL/LOGIN/PASSWORD` | SolisCloud |
+| `SOLIS_STATION` | Station name as it appears in the SolisCloud dashboard |
 | `GROWATT_URL/TOKEN/SN/TYPE` | Growatt API |
 | `SMTP_HOST/PORT/USER/PASSWORD` | Outbound mail server |
 | `EMAIL_FROM` | Sender address |
