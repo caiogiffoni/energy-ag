@@ -13,20 +13,14 @@ uv sync
 source .venv/bin/activate
 ```
 
-### 2. Install Playwright browser (first time only)
-
-```bash
-playwright install chromium
-```
-
-### 3. Configure credentials
+### 2. Configure credentials
 
 ```bash
 cp .env.example .env
 # fill in credentials for each inverter and SMTP
 ```
 
-### 4. Run
+### 3. Run
 
 ```bash
 python -m robocorp.tasks run tasks.py
@@ -49,6 +43,26 @@ Artifacts (screenshots on failure, report images) are written to `output/`.
 
 ```bash
 rcc run
+```
+
+---
+
+## Deployment (Robocorp Control Room)
+
+Pushing to `main` automatically deploys to Robocorp via GitHub Actions. The workflow uses `rcc cloud push` — no manual zipping or uploading needed.
+
+Required GitHub secrets:
+
+| Secret | Where to find it |
+|---|---|
+| `ROBOCORP_CREDENTIALS` | Control Room → profile → Access credentials → Generate |
+| `ROBOCORP_WORKSPACE_ID` | UUID from `rcc cloud workspace` or Control Room URL |
+| `ROBOCORP_ROBOT_ID` | Numeric ID from `rcc cloud workspace --workspace <id>` |
+
+To deploy manually from the command line:
+
+```bash
+rcc cloud push --account "$ROBOCORP_CREDENTIALS" --workspace "$ROBOCORP_WORKSPACE_ID" --robot "$ROBOCORP_ROBOT_ID"
 ```
 
 ---
@@ -83,3 +97,7 @@ libraries/
 | `SMTP_HOST/PORT/USER/PASSWORD` | Outbound mail server |
 | `EMAIL_FROM` | Sender address |
 | `EMAIL_TO` | Recipient(s), comma-separated |
+| `HEADLESS` | Set to `false` locally to see the browser window (default: `true`) |
+| `ROBOCORP_CREDENTIALS` | `rcc cloud push` auth token (CI/CD only) |
+| `ROBOCORP_WORKSPACE_ID` | Robocorp workspace UUID (CI/CD only) |
+| `ROBOCORP_ROBOT_ID` | Robocorp robot ID (CI/CD only) |
