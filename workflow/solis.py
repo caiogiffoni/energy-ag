@@ -16,6 +16,7 @@ class Solis:
         self.url = secret_or_env("SOLIS_URL")
         self.login = secret_or_env("SOLIS_LOGIN")
         self.password = secret_or_env("SOLIS_PASSWORD")
+        self.station = secret_or_env("SOLIS_STATION")
 
 
     @screenshot_on_error("solis")
@@ -38,12 +39,12 @@ class Solis:
             got_it.click()
 
         with page.expect_popup() as page1_info:
-            page.locator("div").filter(has_text=re.compile(r"^STATION_NAME$")).nth(1).click()
+            page.locator("div").filter(has_text=re.compile(rf"^{re.escape(self.station)}$")).nth(1).click()
         new_page = page1_info.value
         production = new_page.locator(
             "div.feature-content"
         )
-        
+
         expect(production).to_be_visible(timeout=60000)
 
         solis_production = new_page.locator(".electrical-info-item").filter(has_text="Daily Yield").locator(".f__24").inner_text()
