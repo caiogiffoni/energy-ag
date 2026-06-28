@@ -16,7 +16,7 @@ class Saj:
     @screenshot_on_error("saj")
     def get_production(self, page) -> tuple[str, str, Path]:
         logger.info("Navigating to %s", self.url)
-        page.goto(self.url, wait_until="domcontentloaded")
+        page.goto(self.url, wait_until="domcontentloaded", timeout=90_000)
 
         logger.info("Logging in")
         page.get_by_role("textbox", name="Username/Email").fill(self.login or "")
