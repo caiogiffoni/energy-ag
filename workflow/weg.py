@@ -13,7 +13,8 @@ class Weg:
 
 
     @screenshot_on_error("weg")
-    def get_production(self, page) -> tuple[str, str, Path]:
+    def get_production(self, page) -> tuple[str, str, Path, str]:
+        notes = ""
         logger.info("Navigating to %s", self.url)
         page.goto(self.url, wait_until="domcontentloaded")
 
@@ -39,4 +40,4 @@ class Weg:
         col.screenshot(path=shot)
         logger.info("Screenshot saved to %s", shot)
 
-        return weg_production, weg_title, shot
+        return weg_production, weg_title, shot, notes

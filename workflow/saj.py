@@ -1,10 +1,14 @@
-from utils.secrets_util import secret_or_env
-from libraries.logger import get_logger
-from libraries.decorators import retry_on_timeout, screenshot_on_error
 from pathlib import Path
+
 from playwright.sync_api import expect
+
+from libraries.decorators import retry_on_timeout, screenshot_on_error
+from libraries.logger import get_logger
+from utils.secrets_util import secret_or_env
+
 logger = get_logger(__name__)
 from time import sleep
+
 
 class Saj:
     def __init__(self):
@@ -15,7 +19,8 @@ class Saj:
 
     @screenshot_on_error("saj")
     @retry_on_timeout(retries=2, base_timeout=60_000, timeout_multiplier=2.0)
-    def get_production(self, page, timeout: int = 60_000) -> tuple[str, str, Path]:
+    def get_production(self, page, timeout: int = 60_000) -> tuple[str, str, Path, str]:
+        notes = ""
         logger.info("Navigating to %s", self.url)
         page.goto(self.url, wait_until="domcontentloaded", timeout=timeout)
 
@@ -40,4 +45,4 @@ class Saj:
         page.get_by_text("Curve Analysis ToDayWeekMonthYearTotal Export Lifetime Production :").screenshot(path=shot)
         logger.info("Screenshot saved to %s", shot)
 
-        return saj_production, saj_production, shot
+        return saj_production, saj_production, shot, notes

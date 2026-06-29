@@ -1,9 +1,10 @@
-import requests
 from datetime import date
-from utils.secrets_util import secret_or_env
 
+import requests
 
 from libraries.logger import get_logger
+from utils.secrets_util import secret_or_env
+
 logger = get_logger(__name__)
 
 class Growatt:
@@ -14,7 +15,7 @@ class Growatt:
         self.type = secret_or_env("GROWATT_TYPE")
 
 
-    def get_production(self) -> tuple[str, str, str]:
+    def get_production(self) -> tuple[str, str, str, str]:
         logger.info("Fetching Growatt %s", self.url)
         response = requests.post(
             self.url,
@@ -31,4 +32,4 @@ class Growatt:
 
         eac_today = round(response.json()["data"]["datas"][0]["eacToday"], 2)
 
-        return eac_today, "", ""
+        return eac_today, "", "", ""

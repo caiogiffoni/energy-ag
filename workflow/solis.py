@@ -20,7 +20,7 @@ class Solis:
 
 
     @screenshot_on_error("solis")
-    def get_production(self, page) -> tuple[str, str, Path]:
+    def get_production(self, page) -> tuple[str, str, Path, str]:
         logger.info("Navigating to %s", self.url)
         page.goto(self.url, wait_until="domcontentloaded")
 
@@ -33,10 +33,13 @@ class Solis:
         logger.info("Waiting for dashboard")
         daily = page.locator("div").filter(has_text=re.compile(r"^Daily Yield$")).first
         expect(daily).to_be_visible(timeout=60000)
+        notes = ""
         # check if pop up is live. remove this later
         got_it = page.locator("button.el-button.el-button--default.el-button--small", has_text="Got it")
         if got_it.is_visible():
             got_it.click()
+        else:
+            notes += "No popup found\n"
 
         with page.expect_popup() as page1_info:
             page.locator("div").filter(has_text=re.compile(rf"^{re.escape(self.station)}$")).nth(1).click()
@@ -57,7 +60,7 @@ class Solis:
         production.screenshot(path=shot)
         logger.info("Screenshot saved to %s", shot)
 
-        return solis_production, solis_production, shot
+        return solis_production, solis_production, shot, notes
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
