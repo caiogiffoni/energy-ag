@@ -20,6 +20,8 @@ cp .env.example .env
 # fill in credentials for each inverter and SMTP
 ```
 
+> **Note:** `.env` is only loaded when running directly via uv/Python (`load_dotenv()` in `tasks.py`). When running via `rcc run` or Control Room, credentials must come from Robocorp Vault or Control Room environment variables instead.
+
 ### 3. Run
 
 ```bash
@@ -33,7 +35,7 @@ python workflow/process.py
 python workflow/solis.py
 ```
 
-Artifacts (screenshots on failure, report images) are written to `output/`.
+Artifacts (screenshots on failure or timeout retry, report images) are written to `output/`.
 
 ---
 
@@ -80,10 +82,10 @@ workflow/
 utils/
   email_util.py             # SMTP sender with multiple image attachments
   secrets_util.py           # Credential lookup: Robocorp Vault → os.environ
-  utils.py                  # send_generated_energy_email() — assembles and sends the report
+  utils.py                  # send_generated_energy_email() — assembles and sends the report; appends a Notes block when scrapers emit runtime flags
 libraries/
   logger.py                 # Shared logging setup
-  decorators.py             # @screenshot_on_error — saves screenshot on scraper failure
+  decorators.py             # @screenshot_on_error — saves screenshot on scraper failure; @retry_on_timeout — retries on Playwright timeout with increasing timeout and per-attempt screenshots
 ```
 
 ## Environment variables
