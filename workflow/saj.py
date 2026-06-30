@@ -30,9 +30,8 @@ class Saj:
         page.get_by_text("Login").click()
 
         logger.info("Waiting for dashboard column")
-        production = page.locator(
-            "p.tip:has-text(\"Today's production\") + p.value span:first-child"
-        )
+        curve_card = page.locator(".plant-chart-card").filter(has_text="Curve Analysis")
+        production = curve_card.locator("span.text-2xl.font-bold")
         expect(production).to_be_visible(timeout=timeout)
 
         saj_production = production.inner_text()
@@ -42,7 +41,7 @@ class Saj:
         out.mkdir(parents=True, exist_ok=True)
         shot = out / "saj_energy_data.png"
         sleep(5)
-        page.get_by_text("Curve Analysis ToDayWeekMonthYearTotal Export Lifetime Production :").screenshot(path=shot)
+        curve_card.screenshot(path=shot)
         logger.info("Screenshot saved to %s", shot)
 
         return saj_production, saj_production, shot, notes
