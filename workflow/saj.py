@@ -26,8 +26,8 @@ class Saj:
 
         logger.info("Logging in")
         page.get_by_role("textbox", name="Username/Email").fill(self.login or "")
-        page.get_by_role("textbox", name="Please enter your password").fill(self.password or "")
-        page.get_by_role("button", name="Login").click()
+        page.get_by_role("textbox", name="Password").fill(self.password or "")
+        page.get_by_text("Login").click()
 
         logger.info("Waiting for dashboard column")
         production = page.locator(
