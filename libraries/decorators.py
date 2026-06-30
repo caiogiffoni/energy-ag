@@ -23,8 +23,17 @@ def retry_on_timeout(retries: int = 2, base_timeout: int = 60_000, timeout_multi
                 except PlaywrightTimeoutError:
                     if attempt == retries:
                         raise
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    name = type(self).__name__.lower()
+                    out = Path(secret_or_env("ROBOT_ARTIFACTS", "output"))
+                    out.mkdir(parents=True, exist_ok=True)
+                    retry_shot = out / f"{name}_timeout_attempt{attempt + 1}_{timestamp}.png"
+                    page.screenshot(path=retry_shot, full_page=True)
                     timeout = int(timeout * timeout_multiplier)
-                    logger.warning("Attempt %d/%d timed out — retrying with %dms", attempt + 1, retries + 1, timeout)
+                    logger.warning(
+                        "Attempt %d/%d timed out — screenshot saved to %s — retrying with %dms",
+                        attempt + 1, retries + 1, retry_shot, timeout,
+                    )
         return wrapper
     return decorator
 
