@@ -25,15 +25,10 @@ class Saj:
         logger.info("Navigating to %s", self.url)
         page.goto(self.url, wait_until="domcontentloaded", timeout=timeout)
 
-        login_box = page.get_by_role("textbox", name="Username/Email")
-        if login_box.is_visible():
-            logger.info("Logging in")
-            login_box.fill(self.login or "", timeout=timeout)
-            page.get_by_role("textbox", name="Password").fill(self.password or "", timeout=timeout)
-            page.get_by_text("Login").click(timeout=timeout)
-        else:
-            logger.info("Session active - skipping login")
-            notes += "Session was active — login skipped\n"
+        logger.info("Logging in")
+        page.get_by_role("textbox", name="Username/Email").fill(self.login or "", timeout=timeout)
+        page.get_by_role("textbox", name="Password").fill(self.password or "", timeout=timeout)
+        page.get_by_text("Login").click(timeout=timeout)
 
         logger.info("Waiting for dashboard column")
         curve_card = page.locator(".plant-chart-card").filter(has_text="Curve Analysis")
