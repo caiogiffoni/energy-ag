@@ -25,9 +25,9 @@ class Saj:
         page.goto(self.url, wait_until="domcontentloaded", timeout=timeout)
 
         logger.info("Logging in")
-        page.get_by_role("textbox", name="Username/Email").fill(self.login or "")
-        page.get_by_role("textbox", name="Password").fill(self.password or "")
-        page.get_by_text("Login").click()
+        page.get_by_role("textbox", name="Username/Email").fill(self.login or "", timeout=timeout)
+        page.get_by_role("textbox", name="Password").fill(self.password or "", timeout=timeout)
+        page.get_by_text("Login").click(timeout=timeout)
 
         logger.info("Waiting for dashboard column")
         curve_card = page.locator(".plant-chart-card").filter(has_text="Curve Analysis")
@@ -40,8 +40,9 @@ class Saj:
         out = Path(secret_or_env("ROBOT_ARTIFACTS", "output"))
         out.mkdir(parents=True, exist_ok=True)
         shot = out / "saj_energy_data.png"
-        sleep(5)
-        curve_card.screenshot(path=shot)
+        curve_card.scroll_into_view_if_needed(timeout=timeout)
+        sleep(3)
+        curve_card.screenshot(path=shot, timeout=timeout, animations="disabled")
         logger.info("Screenshot saved to %s", shot)
 
         return saj_production, saj_production, shot, notes
