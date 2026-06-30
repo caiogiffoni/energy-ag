@@ -76,7 +76,7 @@ def send_generated_energy_email(weg_info: tuple[str, str, str, str], saj_info: t
         notes_block = ""
         active_notes = [(name, n.strip()) for name, n in notes_entries if n.strip()]
         if active_notes:
-            notes_block = "\n--- Notes ---\n" + "\n".join(f"{name}: {n}" for name, n in active_notes) + "\n"
+            notes_block = "\nDeveloper Notes:\n" + "\n".join(f"  {name}: {n}" for name, n in active_notes) + "\n"
         recipients = [addr.strip() for addr in to_addr.split(",") if addr.strip()]
         for recipient in recipients:
             logger.info("Sending email to %s", recipient)
