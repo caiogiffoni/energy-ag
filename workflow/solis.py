@@ -25,7 +25,9 @@ class Solis:
         page.goto(self.url, wait_until="domcontentloaded")
 
         logger.info("Logging in")
-        page.get_by_role("textbox", name="Username/Email").fill(self.login or "")
+        username = page.get_by_role("textbox", name="Username/Email")
+        username.wait_for(state="visible", timeout=60000)
+        username.fill(self.login or "")
         page.get_by_role("textbox", name="Password").fill(self.password or "")
         page.locator(".el-checkbox.el-checkbox--default.el-tooltip__trigger > .el-checkbox__input > .el-checkbox__inner").click()
         page.get_by_role("button", name="Login").click()
