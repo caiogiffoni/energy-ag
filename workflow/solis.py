@@ -23,6 +23,7 @@ class Solis:
     def get_production(self, page) -> tuple[str, str, Path, str]:
         logger.info("Navigating to %s", self.url)
         page.goto(self.url, wait_until="domcontentloaded")
+        page.wait_for_load_state("networkidle")
 
         logger.info("Logging in")
         page.get_by_role("textbox", name="Username/Email").fill(self.login or "")
