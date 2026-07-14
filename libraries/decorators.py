@@ -31,7 +31,7 @@ def retry_on_timeout(retries: int = 2, base_timeout: int = 60_000, timeout_multi
                     page.screenshot(path=retry_shot, full_page=True)
                     timeout = int(timeout * timeout_multiplier)
                     logger.warning(
-                        "Attempt %d/%d timed out — screenshot saved to %s — retrying with %dms",
+                        "Attempt %d/%d timed out - screenshot saved to %s - retrying with %dms",
                         attempt + 1, retries + 1, retry_shot, timeout,
                     )
         return wrapper
@@ -53,7 +53,7 @@ def screenshot_on_error(name: str):
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 error_shot = out / f"{name}_error_{timestamp}.png"
                 page.screenshot(path=error_shot, full_page=True)
-                logger.error("%s scraper failed — error screenshot saved to %s", name, error_shot)
+                logger.error("%s scraper failed - error screenshot saved to %s", name, error_shot)
                 raise
         return wrapper
     return decorator

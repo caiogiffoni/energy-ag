@@ -24,7 +24,7 @@ class Process:
     def _ensure_chromium(self):
         cache = Path.home() / ".cache" / "ms-playwright"
         if not any(cache.glob("chromium-*/chrome-linux64/chrome")):
-            logger.info("Chromium not found — installing via playwright")
+            logger.info("Chromium not found - installing via playwright")
             subprocess.run(["playwright", "install", "chromium"], check=True)
 
     def start(self):

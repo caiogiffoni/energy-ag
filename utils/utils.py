@@ -1,8 +1,8 @@
 import json
 from datetime import date
 
-from utils.email_util import send_email_with_image
 from libraries.logger import get_logger
+from utils.email_util import send_email_with_image
 from utils.secrets_util import secret_or_env
 
 logger = get_logger(__name__)
@@ -22,12 +22,12 @@ def _get_gspread_client():
 def post_to_sheets(weg, saj, solis, growatt):
     sheet_id = secret_or_env("GOOGLE_SHEET_ID")
     if not sheet_id:
-        logger.info("GOOGLE_SHEET_ID not set — Sheets post skipped")
+        logger.info("GOOGLE_SHEET_ID not set - Sheets post skipped")
         return
 
     gc = _get_gspread_client()
     if gc is None:
-        logger.info("GOOGLE_CREDENTIALS_JSON not set — Sheets post skipped")
+        logger.info("GOOGLE_CREDENTIALS_JSON not set - Sheets post skipped")
         return
 
     ws = gc.open_by_key(sheet_id).sheet1
@@ -38,7 +38,7 @@ def post_to_sheets(weg, saj, solis, growatt):
 
     if data_rows and data_rows[-1][0] == today_str:
         row_num = len(all_rows)  # overwrite last row
-        logger.info("Today's row already exists — overwriting row %d", row_num)
+        logger.info("Today's row already exists - overwriting row %d", row_num)
     else:
         row_num = len(all_rows) + 1  # append new row
         logger.info("Appending new row %d for %s", row_num, today_str)
@@ -58,12 +58,12 @@ def send_generated_energy_email(weg_info: tuple[str, str, str, str], saj_info: t
         to_addr = secret_or_env("EMAIL_TO")
         logger.info("Sending emails to %s", to_addr)
         if not to_addr:
-            logger.info("EMAIL_TO not set — email skipped")
+            logger.info("EMAIL_TO not set - email skipped")
             return
         smtp_user = secret_or_env("SMTP_USER")
         smtp_password = secret_or_env("SMTP_PASSWORD")
         if not smtp_user or not smtp_password:
-            logger.info("SMTP_USER or SMTP_PASSWORD not set — email skipped")
+            logger.info("SMTP_USER or SMTP_PASSWORD not set - email skipped")
             return
         inversor2 = round(float(saj_production) + float(solis_production) + float(growatt_production), 2)
         post_to_sheets(weg_production, saj_production, solis_production, growatt_production)

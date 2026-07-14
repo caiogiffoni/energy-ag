@@ -51,15 +51,15 @@ rcc run
 
 ## Deployment (Robocorp Control Room)
 
-Pushing to `main` automatically deploys to Robocorp via GitHub Actions. The workflow uses `rcc cloud push` — no manual zipping or uploading needed.
+Pushing to `main` automatically deploys to Robocorp via GitHub Actions. The workflow uses `rcc cloud push` - no manual zipping or uploading needed.
 
 Required GitHub secrets:
 
-| Secret | Where to find it |
-|---|---|
-| `ROBOCORP_CREDENTIALS` | Control Room → profile → Access credentials → Generate |
-| `ROBOCORP_WORKSPACE_ID` | UUID from `rcc cloud workspace` or Control Room URL |
-| `ROBOCORP_ROBOT_ID` | Numeric ID from `rcc cloud workspace --workspace <id>` |
+| Secret                  | Where to find it                                       |
+| ----------------------- | ------------------------------------------------------ |
+| `ROBOCORP_CREDENTIALS`  | Control Room → profile → Access credentials → Generate |
+| `ROBOCORP_WORKSPACE_ID` | UUID from `rcc cloud workspace` or Control Room URL    |
+| `ROBOCORP_ROBOT_ID`     | Numeric ID from `rcc cloud workspace --workspace <id>` |
 
 To deploy manually from the command line:
 
@@ -72,7 +72,7 @@ rcc cloud push --account "$ROBOCORP_CREDENTIALS" --workspace "$ROBOCORP_WORKSPAC
 ## Project layout
 
 ```
-tasks.py                    # @task entry point — loads .env, opens Playwright, calls Process.start()
+tasks.py                    # @task entry point - loads .env, opens Playwright, calls Process.start()
 workflow/
   process.py                # Orchestrator: runs all 4 scrapers → sums production → sends email
   weg.py                    # Playwright scraper for WEG/Huawei FusionSolar
@@ -82,25 +82,25 @@ workflow/
 utils/
   email_util.py             # SMTP sender with multiple image attachments
   secrets_util.py           # Credential lookup: Robocorp Vault → os.environ
-  utils.py                  # send_generated_energy_email() — assembles and sends the report; appends a Notes block when scrapers emit runtime flags
+  utils.py                  # send_generated_energy_email() - assembles and sends the report; appends a Notes block when scrapers emit runtime flags
 libraries/
   logger.py                 # Shared logging setup
-  decorators.py             # @screenshot_on_error — saves screenshot on scraper failure; @retry_on_timeout — retries on Playwright timeout with increasing timeout and per-attempt screenshots
+  decorators.py             # @screenshot_on_error - saves screenshot on scraper failure; @retry_on_timeout - retries on Playwright timeout with increasing timeout and per-attempt screenshots
 ```
 
 ## Environment variables
 
-| Variable | Description |
-|---|---|
-| `FUSION_URL/LOGIN/PASSWORD` | WEG/Huawei FusionSolar |
-| `SAJ_URL/LOGIN/PASSWORD` | SAJ portal |
-| `SOLIS_URL/LOGIN/PASSWORD` | SolisCloud |
-| `SOLIS_STATION` | Station name as it appears in the SolisCloud dashboard |
-| `GROWATT_URL/TOKEN/SN/TYPE` | Growatt API |
-| `SMTP_HOST/PORT/USER/PASSWORD` | Outbound mail server |
-| `EMAIL_FROM` | Sender address |
-| `EMAIL_TO` | Recipient(s), comma-separated |
-| `HEADLESS` | Set to `false` locally to see the browser window (default: `true`) |
-| `ROBOCORP_CREDENTIALS` | `rcc cloud push` auth token (CI/CD only) |
-| `ROBOCORP_WORKSPACE_ID` | Robocorp workspace UUID (CI/CD only) |
-| `ROBOCORP_ROBOT_ID` | Robocorp robot ID (CI/CD only) |
+| Variable                       | Description                                                        |
+| ------------------------------ | ------------------------------------------------------------------ |
+| `FUSION_URL/LOGIN/PASSWORD`    | WEG/Huawei FusionSolar                                             |
+| `SAJ_URL/LOGIN/PASSWORD`       | SAJ portal                                                         |
+| `SOLIS_URL/LOGIN/PASSWORD`     | SolisCloud                                                         |
+| `SOLIS_STATION`                | Station name as it appears in the SolisCloud dashboard             |
+| `GROWATT_URL/TOKEN/SN/TYPE`    | Growatt API                                                        |
+| `SMTP_HOST/PORT/USER/PASSWORD` | Outbound mail server                                               |
+| `EMAIL_FROM`                   | Sender address                                                     |
+| `EMAIL_TO`                     | Recipient(s), comma-separated                                      |
+| `HEADLESS`                     | Set to `false` locally to see the browser window (default: `true`) |
+| `ROBOCORP_CREDENTIALS`         | `rcc cloud push` auth token (CI/CD only)                           |
+| `ROBOCORP_WORKSPACE_ID`        | Robocorp workspace UUID (CI/CD only)                               |
+| `ROBOCORP_ROBOT_ID`            | Robocorp robot ID (CI/CD only)                                     |
