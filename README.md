@@ -74,7 +74,7 @@ rcc cloud push --account "$ROBOCORP_CREDENTIALS" --workspace "$ROBOCORP_WORKSPAC
 ```
 tasks.py                    # @task entry point - loads .env, opens Playwright, calls Process.start()
 workflow/
-  process.py                # Orchestrator: runs all 4 scrapers → sums production → sends email
+  process.py                # Orchestrator: runs WEG/SAJ/Solis in parallel threads + Growatt on main thread → sends email
   weg.py                    # Playwright scraper for WEG/Huawei FusionSolar
   saj.py                    # Playwright scraper for SAJ portal
   solis.py                  # Playwright scraper for SolisCloud

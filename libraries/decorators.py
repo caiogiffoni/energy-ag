@@ -11,7 +11,11 @@ logger = get_logger(__name__)
 
 
 def retry_on_timeout(retries: int = 2, base_timeout: int = 60_000, timeout_multiplier: float = 2.0):
-    """Retries on Playwright TimeoutError, passing an increasing `timeout` kwarg each attempt."""
+    """Retries on Playwright timeouts, passing an increasing `timeout` kwarg each attempt.
+
+    AssertionError is included because Playwright's expect() raises it when the
+    assertion times out.
+    """
     def decorator(fn):
         @functools.wraps(fn)
         def wrapper(self, page, *args, **kwargs):
@@ -20,7 +24,7 @@ def retry_on_timeout(retries: int = 2, base_timeout: int = 60_000, timeout_multi
                 logger.info("Attempt %d/%d with timeout %dms", attempt + 1, retries + 1, timeout)
                 try:
                     return fn(self, page, *args, timeout=timeout, **kwargs)
-                except PlaywrightTimeoutError:
+                except (PlaywrightTimeoutError, AssertionError):
                     if attempt == retries:
                         raise
                     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
