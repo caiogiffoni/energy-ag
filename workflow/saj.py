@@ -1,6 +1,7 @@
 import math
 from pathlib import Path
 
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import expect
 
 from libraries.decorators import retry_on_timeout, screenshot_on_error
@@ -25,10 +26,16 @@ class Saj:
         logger.info("Navigating to %s", self.url)
         page.goto(self.url, wait_until="domcontentloaded", timeout=timeout)
 
-        logger.info("Logging in")
-        page.get_by_role("textbox", name="Username/Email").fill(self.login or "", timeout=timeout)
-        page.get_by_role("textbox", name="Password").fill(self.password or "", timeout=timeout)
-        page.get_by_text("Login").click(timeout=timeout)
+        login_box = page.get_by_role("textbox", name="Username/Email")
+        try:
+            login_box.wait_for(state="visible", timeout=10_000)
+            logger.info("Logging in")
+            login_box.fill(self.login or "", timeout=timeout)
+            page.get_by_role("textbox", name="Password").fill(self.password or "", timeout=timeout)
+            page.get_by_text("Login").click(timeout=timeout)
+        except PlaywrightTimeoutError:
+            logger.info("Session active - skipping login") # retry reuses the already-authenticated page
+            notes += "Session was active - login skipped\n"
 
         logger.info("Waiting for dashboard column")
         curve_card = page.locator(".plant-chart-card").filter(has_text="Curve Analysis")
@@ -41,12 +48,28 @@ class Saj:
         out = Path(secret_or_env("ROBOT_ARTIFACTS", "output"))
         out.mkdir(parents=True, exist_ok=True)
         shot = out / "saj_energy_data.png"
-        curve_card.scroll_into_view_if_needed(timeout=timeout)
-        sleep(3)
-        curve_card.screenshot(path=shot, timeout=timeout, animations="disabled")
-        logger.info("Screenshot saved to %s", shot)
+        try:
+            curve_card.scroll_into_view_if_needed(timeout=15_000)
+            sleep(3)
+            curve_card.screenshot(path=shot, timeout=15_000, animations="disabled")
+            logger.info("Screenshot saved to %s", shot)
+        except PlaywrightTimeoutError:
+            page.screenshot(path=shot, full_page=True)
+            logger.warning("Card screenshot timed out - saved full-page fallback to %s", shot)
+            notes += "Card screenshot timed out - full-page fallback used\n"
 
         attempt_num = int(math.log2(timeout // 60_000)) + 1
         notes += f"Succeeded on attempt {attempt_num}/3\n"
 
         return saj_production, saj_production, shot, notes
+
+
+if __name__ == "__main__":
+    from dotenv import load_dotenv
+    from playwright.sync_api import sync_playwright
+    load_dotenv()
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        page = browser.new_page()
+        saj = Saj()
+        saj.get_production(page)
