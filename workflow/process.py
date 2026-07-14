@@ -24,15 +24,16 @@ def _ensure_chromium():
 
 
 def _run_browser_scraper(scraper_class, headless, results, errors, key):
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=headless)
-        try:
-            page = browser.new_page()
-            results[key] = scraper_class().get_production(page)
-        except Exception as e:
-            errors[key] = e
-        finally:
-            browser.close()
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=headless)
+            try:
+                page = browser.new_page()
+                results[key] = scraper_class().get_production(page)
+            finally:
+                browser.close()
+    except Exception as e:
+        errors[key] = e
 
 
 class Process:

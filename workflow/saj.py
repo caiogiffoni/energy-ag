@@ -26,19 +26,21 @@ class Saj:
         logger.info("Navigating to %s", self.url)
         page.goto(self.url, wait_until="domcontentloaded", timeout=timeout)
 
+        curve_card = page.locator(".plant-chart-card").filter(has_text="Curve Analysis")
         login_box = page.get_by_role("textbox", name="Username/Email")
-        try:
-            login_box.wait_for(state="visible", timeout=10_000)
+        # Whichever renders first decides: login form on a fresh page, dashboard
+        # card when a retry reuses the already-authenticated page
+        login_box.or_(curve_card).first.wait_for(state="visible", timeout=timeout)
+        if login_box.is_visible():
             logger.info("Logging in")
             login_box.fill(self.login or "", timeout=timeout)
             page.get_by_role("textbox", name="Password").fill(self.password or "", timeout=timeout)
             page.get_by_text("Login").click(timeout=timeout)
-        except PlaywrightTimeoutError:
-            logger.info("Session active - skipping login") # retry reuses the already-authenticated page
+        else:
+            logger.info("Session active - skipping login")
             notes += "Session was active - login skipped\n"
 
         logger.info("Waiting for dashboard column")
-        curve_card = page.locator(".plant-chart-card").filter(has_text="Curve Analysis")
         production = curve_card.locator("span.text-2xl.font-bold")
         expect(production).to_be_visible(timeout=timeout)
 
