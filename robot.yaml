@@ -1,4 +1,4 @@
-# Robocorp robot config — see https://github.com/robocorp/rcc/blob/master/docs/recipes.md#what-is-in-robotyaml
+# Robocorp robot config - see https://github.com/robocorp/rcc/blob/master/docs/recipes.md#what-is-in-robotyaml
 
 tasks:
   energy_production:
