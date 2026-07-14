@@ -3,9 +3,8 @@ import subprocess
 from pathlib import Path
 
 from libraries.logger import get_logger
-from utils.email_util import send_email_with_image
 from utils.secrets_util import secret_or_env
-from utils.utils import send_generated_energy_email
+from utils.utils import post_to_sheets, send_generated_energy_email
 from workflow.growatt import Growatt
 from workflow.saj import Saj
 from workflow.solis import Solis
@@ -33,19 +32,35 @@ class Process:
         self.browser = self.playwright.chromium.launch(headless=headless)
         page = self.browser.new_page()
         
-        weg = Weg()
-        weg_info = weg.get_production(page)
+        results = {}
+        errors = {}
+        for key, scraper_class in [("weg", Weg), ("saj", Saj), ("solis", Solis)]:
+            try:
+                results[key] = scraper_class().get_production(page)
+            except Exception as e:
+                logger.error("%s scraper failed - continuing with the rest: %s", key, e)
+                errors[key] = e
+                results[key] = ("", "", None, f"FAILED: {e}")
+        try:
+            results["growatt"] = Growatt().get_production()
+        except Exception as e:
+            logger.error("growatt scraper failed - continuing with the rest: %s", e)
+            errors["growatt"] = e
+            results["growatt"] = ("", "", None, f"FAILED: {e}")
 
-        saj = Saj()
-        saj_info = saj.get_production(page)
+        # Row goes out with blanks for failures
+        post_to_sheets(
+            weg=results["weg"][0],
+            saj=results["saj"][0],
+            solis=results["solis"][0],
+            growatt=results["growatt"][0],
+        )
 
-        solis = Solis()
-        solis_info = solis.get_production(page)
+        if errors:
+            logger.error("Scrapers failed (%s) - sheet row posted, email skipped", ", ".join(errors))
+            raise next(iter(errors.values()))
 
-        growatt = Growatt()
-        growatt_info = growatt.get_production()
-
-        send_generated_energy_email(weg_info, saj_info, solis_info, growatt_info)
+        send_generated_energy_email(results["weg"], results["saj"], results["solis"], results["growatt"])
 
 
 if __name__ == "__main__":

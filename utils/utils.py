@@ -66,7 +66,6 @@ def send_generated_energy_email(weg_info: tuple[str, str, str, str], saj_info: t
             logger.info("SMTP_USER or SMTP_PASSWORD not set - email skipped")
             return
         inversor2 = round(float(saj_production) + float(solis_production) + float(growatt_production), 2)
-        post_to_sheets(weg_production, saj_production, solis_production, growatt_production)
         notes_entries = [
             ("weg", weg_notes),
             ("saj", saj_notes),
