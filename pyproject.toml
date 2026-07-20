@@ -13,3 +13,12 @@ dependencies = [
     "robocorp-browser>=2.0.0",
     "rpaframework>=31.2.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
