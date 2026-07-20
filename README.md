@@ -44,6 +44,18 @@ Artifacts (screenshots on failure or timeout retry, report images) are written t
 
 ---
 
+## Testing
+
+```bash
+uv run pytest
+```
+
+The automated suite (`tests/`) covers business logic only - credential lookup, the retry/screenshot decorators, email routing and math, Sheets row/formula logic, Growatt REST parsing, and `Process.start()` orchestration (failure isolation, sheet-always-posted, email-only-on-success) - with every external dependency (Vault, SMTP, the Growatt API, gspread, the four scraper classes) mocked. It never hits a live portal, live API, or sends a real email, and it runs in CI on every push/PR via `.github/workflows/deploy.yml`, gating deployment.
+
+The WEG/SAJ/Solis Playwright scrapers aren't covered by automated tests - they run successfully in production daily and aren't actively changing, so mocking their DOM would add fixture-maintenance cost without catching real regressions (a live selector break already surfaces via the error screenshot on the daily run).
+
+---
+
 ## Running with RCC
 
 [RCC](https://github.com/robocorp/rcc) builds an isolated conda environment from `conda.yaml` automatically.
