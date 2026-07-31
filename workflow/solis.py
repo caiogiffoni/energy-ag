@@ -37,22 +37,26 @@ class Solis:
         expect(daily).to_be_visible(timeout=60000)
         notes = ""
         # check if pop up is live. remove this later
-        got_it = page.locator("button.el-button.el-button--default.el-button--small", has_text="Got it")
-        if got_it.is_visible():
-            got_it.click()
-        else:
-            notes += "No popup found\n"
+        # got_it = page.locator("button.el-button.el-button--default.el-button--small", has_text="Got it")
+        # if got_it.is_visible():
+        #     got_it.click()
+        # else:
+        #     notes += "No popup found\n"
 
         with page.expect_popup() as page1_info:
             page.locator("div").filter(has_text=re.compile(rf"^{re.escape(self.station)}$")).nth(1).click()
         new_page = page1_info.value
-        production = new_page.locator(
-            "div.feature-content"
-        )
+        production = new_page.locator(".energy-box")
 
         expect(production).to_be_visible(timeout=60000)
 
-        solis_production = new_page.locator(".electrical-info-item").filter(has_text="Daily Yield").locator(".f__24").inner_text()
+        solis_production = (
+            new_page.locator(".energy-analysis-item.date-pane")
+            .filter(has_text=re.compile(r"Daily Yield"))
+            .locator(".date-num span")
+            .first
+            .inner_text()
+        )
         logger.info("Solis production: %s kWh", solis_production)
 
         out = Path(secret_or_env("ROBOT_ARTIFACTS", "output"))
