@@ -25,7 +25,7 @@ def _load_vault_secret() -> Any | None:
     return _vault
 
 
-def secret_or_env(key: str, default: str | None = None) -> str | None:
+def secret_or_env(key: str, default: str = "") -> str:
     """Prefer key from Vault secret ``secrets``; otherwise ``os.environ`` (and optional default)."""
     vault_obj = _load_vault_secret()
     if vault_obj is not None:

@@ -1,5 +1,6 @@
 import json
 from datetime import date
+from pathlib import Path
 
 from libraries.logger import get_logger
 from utils.email_util import send_email_with_image
@@ -53,15 +54,18 @@ def post_to_sheets(weg, saj, solis, growatt):
 
 
 def send_generated_energy_email(
-    weg_info: tuple[str, str, str, str],
-    saj_info: tuple[str, str, str, str],
-    solis_info: tuple[str, str, str, str],
-    growatt_info: tuple[str, str, str, str],
+    weg_info: tuple[str, str, Path | None, str],
+    saj_info: tuple[str, str, Path | None, str],
+    solis_info: tuple[str, str, Path | None, str],
+    growatt_info: tuple[str, str, Path | None, str],
 ):
     weg_production, weg_title, weg_shot, weg_notes = weg_info
     saj_production, saj_title, saj_shot, saj_notes = saj_info
     solis_production, solis_title, solis_shot, solis_notes = solis_info
     growatt_production, growatt_title, growatt_shot, growatt_notes = growatt_info
+    if weg_shot is None or saj_shot is None or solis_shot is None:
+        logger.warning("One or more screenshots missing - email skipped")
+        return
     to_addr = secret_or_env("EMAIL_TO")
     logger.info("Sending emails to %s", to_addr)
     if not to_addr:

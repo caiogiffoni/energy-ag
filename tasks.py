@@ -1,6 +1,5 @@
 """Robocorp tasks using Playwright via `robocorp.browser`."""
 
-
 from dotenv import load_dotenv
 from playwright.sync_api import sync_playwright
 from robocorp.tasks import task
