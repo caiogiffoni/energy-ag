@@ -8,8 +8,15 @@ from utils.email_util import send_email_with_image
 from utils.utils import send_generated_energy_email
 
 EXPECTED_KWARGS = {
-    "to_addr", "subject", "body", "image_path",
-    "smtp_host", "smtp_port", "smtp_user", "smtp_password", "from_addr",
+    "to_addr",
+    "subject",
+    "body",
+    "image_path",
+    "smtp_host",
+    "smtp_port",
+    "smtp_user",
+    "smtp_password",
+    "from_addr",
 }
 
 

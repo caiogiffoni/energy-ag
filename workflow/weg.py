@@ -3,14 +3,15 @@ from libraries.logger import get_logger
 from libraries.decorators import screenshot_on_error
 from pathlib import Path
 from playwright.sync_api import expect
+
 logger = get_logger(__name__)
+
 
 class Weg:
     def __init__(self):
         self.url = secret_or_env("FUSION_URL")
         self.login = secret_or_env("FUSION_LOGIN")
         self.password = secret_or_env("FUSION_PASSWORD")
-
 
     @screenshot_on_error("weg")
     def get_production(self, page) -> tuple[str, str, Path, str]:

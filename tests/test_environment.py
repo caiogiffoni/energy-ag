@@ -3,12 +3,25 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 REQUIRED_ENV_KEYS = {
-    "FUSION_URL", "FUSION_LOGIN", "FUSION_PASSWORD",
-    "SAJ_URL", "SAJ_LOGIN", "SAJ_PASSWORD",
-    "SOLIS_URL", "SOLIS_LOGIN", "SOLIS_PASSWORD",
-    "GROWATT_URL", "GROWATT_TOKEN", "GROWATT_SN", "GROWATT_TYPE",
-    "SMTP_HOST", "SMTP_PORT", "SMTP_USER", "SMTP_PASSWORD",
-    "EMAIL_FROM", "EMAIL_TO",
+    "FUSION_URL",
+    "FUSION_LOGIN",
+    "FUSION_PASSWORD",
+    "SAJ_URL",
+    "SAJ_LOGIN",
+    "SAJ_PASSWORD",
+    "SOLIS_URL",
+    "SOLIS_LOGIN",
+    "SOLIS_PASSWORD",
+    "GROWATT_URL",
+    "GROWATT_TOKEN",
+    "GROWATT_SN",
+    "GROWATT_TYPE",
+    "SMTP_HOST",
+    "SMTP_PORT",
+    "SMTP_USER",
+    "SMTP_PASSWORD",
+    "EMAIL_FROM",
+    "EMAIL_TO",
     "HEADLESS",
 }
 
@@ -45,12 +58,16 @@ def test_ensure_chromium_skips_install_when_binary_present(monkeypatch, tmp_path
     from workflow.process import Process
 
     monkeypatch.setenv("HOME", str(tmp_path))
-    chrome_path = tmp_path / ".cache" / "ms-playwright" / "chromium-1234" / "chrome-linux64" / "chrome"
+    chrome_path = (
+        tmp_path / ".cache" / "ms-playwright" / "chromium-1234" / "chrome-linux64" / "chrome"
+    )
     chrome_path.parent.mkdir(parents=True)
     chrome_path.touch()
 
     def fail_if_called(*args, **kwargs):
-        raise AssertionError("subprocess.run should not be called when chromium is already installed")
+        raise AssertionError(
+            "subprocess.run should not be called when chromium is already installed"
+        )
 
     monkeypatch.setattr("workflow.process.subprocess.run", fail_if_called)
 

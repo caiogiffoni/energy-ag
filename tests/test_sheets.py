@@ -48,7 +48,9 @@ def test_post_to_sheets_appends_new_row_when_no_existing_today_row(monkeypatch):
     today_str = date.today().strftime("%d/%m/%Y")
     post_to_sheets(weg=11.1, saj=2.2, solis=3.3, growatt=4.4)
 
-    mock_ws.update.assert_any_call("A3:C3", [[today_str, 11.1, "=G3+H3+I3"]], value_input_option="USER_ENTERED")
+    mock_ws.update.assert_any_call(
+        "A3:C3", [[today_str, 11.1, "=G3+H3+I3"]], value_input_option="USER_ENTERED"
+    )
     mock_ws.update.assert_any_call("G3:I3", [[2.2, 3.3, 4.4]])
 
 
@@ -66,5 +68,7 @@ def test_post_to_sheets_overwrites_existing_today_row(monkeypatch):
 
     post_to_sheets(weg=11.1, saj=2.2, solis=3.3, growatt=4.4)
 
-    mock_ws.update.assert_any_call("A2:C2", [[today_str, 11.1, "=G2+H2+I2"]], value_input_option="USER_ENTERED")
+    mock_ws.update.assert_any_call(
+        "A2:C2", [[today_str, 11.1, "=G2+H2+I2"]], value_input_option="USER_ENTERED"
+    )
     mock_ws.update.assert_any_call("G2:I2", [[2.2, 3.3, 4.4]])

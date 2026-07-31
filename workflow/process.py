@@ -31,7 +31,7 @@ class Process:
         headless = os.environ.get("HEADLESS", "true").lower() != "false"
         self.browser = self.playwright.chromium.launch(headless=headless)
         page = self.browser.new_page()
-        
+
         results = {}
         errors = {}
         for key, scraper_class in [("weg", Weg), ("saj", Saj), ("solis", Solis)]:
@@ -57,15 +57,20 @@ class Process:
         )
 
         if errors:
-            logger.error("Scrapers failed (%s) - sheet row posted, email skipped", ", ".join(errors))
+            logger.error(
+                "Scrapers failed (%s) - sheet row posted, email skipped", ", ".join(errors)
+            )
             raise next(iter(errors.values()))
 
-        send_generated_energy_email(results["weg"], results["saj"], results["solis"], results["growatt"])
+        send_generated_energy_email(
+            results["weg"], results["saj"], results["solis"], results["growatt"]
+        )
 
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
     from playwright.sync_api import expect, sync_playwright
+
     load_dotenv()
     with sync_playwright() as p:
         process = Process(p)

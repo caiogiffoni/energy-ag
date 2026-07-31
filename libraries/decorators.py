@@ -12,6 +12,7 @@ logger = get_logger(__name__)
 
 def retry_on_timeout(retries: int = 2, base_timeout: int = 60_000, timeout_multiplier: float = 2.0):
     """Retries on Playwright TimeoutError, passing an increasing `timeout` kwarg each attempt."""
+
     def decorator(fn):
         @functools.wraps(fn)
         def wrapper(self, page, *args, **kwargs):
@@ -32,9 +33,14 @@ def retry_on_timeout(retries: int = 2, base_timeout: int = 60_000, timeout_multi
                     timeout = int(timeout * timeout_multiplier)
                     logger.warning(
                         "Attempt %d/%d timed out - screenshot saved to %s - retrying with %dms",
-                        attempt + 1, retries + 1, retry_shot, timeout,
+                        attempt + 1,
+                        retries + 1,
+                        retry_shot,
+                        timeout,
                     )
+
         return wrapper
+
     return decorator
 
 
@@ -42,6 +48,7 @@ def screenshot_on_error(name: str):
     """Decorator for Playwright scraper methods with signature (self, page, ...).
     Takes a full-page screenshot into output/ on any unhandled exception, then re-raises.
     """
+
     def decorator(fn):
         @functools.wraps(fn)
         def wrapper(self, page, *args, **kwargs):
@@ -55,5 +62,7 @@ def screenshot_on_error(name: str):
                 page.screenshot(path=error_shot, full_page=True)
                 logger.error("%s scraper failed - error screenshot saved to %s", name, error_shot)
                 raise
+
         return wrapper
+
     return decorator

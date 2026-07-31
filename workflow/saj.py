@@ -18,7 +18,6 @@ class Saj:
         self.login = secret_or_env("SAJ_LOGIN")
         self.password = secret_or_env("SAJ_PASSWORD")
 
-
     @screenshot_on_error("saj")
     @retry_on_timeout(retries=2, base_timeout=60_000, timeout_multiplier=2.0)
     def get_production(self, page, timeout: int = 60_000) -> tuple[str, str, Path, str]:
@@ -34,7 +33,9 @@ class Saj:
             page.get_by_role("textbox", name="Password").fill(self.password or "", timeout=timeout)
             page.get_by_text("Login").click(timeout=timeout)
         except PlaywrightTimeoutError:
-            logger.info("Session active - skipping login") # retry reuses the already-authenticated page
+            logger.info(
+                "Session active - skipping login"
+            )  # retry reuses the already-authenticated page
             notes += "Session was active - login skipped\n"
 
         logger.info("Waiting for dashboard column")
@@ -67,6 +68,7 @@ class Saj:
 if __name__ == "__main__":
     from dotenv import load_dotenv
     from playwright.sync_api import sync_playwright
+
     load_dotenv()
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)

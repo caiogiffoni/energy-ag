@@ -12,11 +12,13 @@ def make_scraper(return_value=None, raises=None):
 
     Accepts any call shape (with a `page` arg for weg/saj/solis, or none for growatt).
     """
+
     class FakeScraper:
         def get_production(self, *args, **kwargs):
             if raises:
                 raise raises
             return return_value
+
     return FakeScraper
 
 
@@ -36,7 +38,9 @@ def fake_playwright():
 
 
 def test_start_posts_sheet_row_and_sends_email_on_full_success(monkeypatch, fake_playwright):
-    monkeypatch.setattr(process_module, "Weg", make_scraper(("10.5", "Yield 10.5 kWh", "weg.png", "")))
+    monkeypatch.setattr(
+        process_module, "Weg", make_scraper(("10.5", "Yield 10.5 kWh", "weg.png", ""))
+    )
     monkeypatch.setattr(process_module, "Saj", make_scraper(("1.1", "1.1", "saj.png", "")))
     monkeypatch.setattr(process_module, "Solis", make_scraper(("2.2", "2.2", "solis.png", "")))
     monkeypatch.setattr(process_module, "Growatt", make_scraper((3.3, "", "", "")))
@@ -57,7 +61,9 @@ def test_start_posts_sheet_row_and_sends_email_on_full_success(monkeypatch, fake
     )
 
 
-def test_start_continues_after_one_scraper_fails_posts_sheet_but_skips_email(monkeypatch, fake_playwright):
+def test_start_continues_after_one_scraper_fails_posts_sheet_but_skips_email(
+    monkeypatch, fake_playwright
+):
     monkeypatch.setattr(process_module, "Weg", make_scraper(raises=RuntimeError("weg boom")))
     monkeypatch.setattr(process_module, "Saj", make_scraper(("1.1", "1.1", "saj.png", "")))
     monkeypatch.setattr(process_module, "Solis", make_scraper(("2.2", "2.2", "solis.png", "")))
@@ -84,7 +90,9 @@ def test_start_growatt_failure_does_not_block_other_scrapers(monkeypatch, fake_p
     monkeypatch.setattr(process_module, "Weg", make_scraper(("10.5", "", "weg.png", "")))
     monkeypatch.setattr(process_module, "Saj", make_scraper(("1.1", "", "saj.png", "")))
     monkeypatch.setattr(process_module, "Solis", make_scraper(("2.2", "", "solis.png", "")))
-    monkeypatch.setattr(process_module, "Growatt", make_scraper(raises=RuntimeError("growatt boom")))
+    monkeypatch.setattr(
+        process_module, "Growatt", make_scraper(raises=RuntimeError("growatt boom"))
+    )
 
     mock_post_to_sheets = MagicMock()
     mock_send_email = MagicMock()

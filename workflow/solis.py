@@ -18,7 +18,6 @@ class Solis:
         self.password = secret_or_env("SOLIS_PASSWORD")
         self.station = secret_or_env("SOLIS_STATION")
 
-
     @screenshot_on_error("solis")
     def get_production(self, page) -> tuple[str, str, Path, str]:
         logger.info("Navigating to %s", self.url)
@@ -29,7 +28,9 @@ class Solis:
         username.wait_for(state="visible", timeout=60000)
         username.fill(self.login or "")
         page.get_by_role("textbox", name="Password").fill(self.password or "")
-        page.locator(".el-checkbox.el-checkbox--default.el-tooltip__trigger > .el-checkbox__input > .el-checkbox__inner").click()
+        page.locator(
+            ".el-checkbox.el-checkbox--default.el-tooltip__trigger > .el-checkbox__input > .el-checkbox__inner"
+        ).click()
         page.get_by_role("button", name="Login").click()
 
         logger.info("Waiting for dashboard")
@@ -44,7 +45,9 @@ class Solis:
         #     notes += "No popup found\n"
 
         with page.expect_popup() as page1_info:
-            page.locator("div").filter(has_text=re.compile(rf"^{re.escape(self.station)}$")).nth(1).click()
+            page.locator("div").filter(has_text=re.compile(rf"^{re.escape(self.station)}$")).nth(
+                1
+            ).click()
         new_page = page1_info.value
         production = new_page.locator(".energy-box")
 
@@ -54,8 +57,7 @@ class Solis:
             new_page.locator(".energy-analysis-item.date-pane")
             .filter(has_text=re.compile(r"Daily Yield"))
             .locator(".date-num span")
-            .first
-            .inner_text()
+            .first.inner_text()
         )
         logger.info("Solis production: %s kWh", solis_production)
 
@@ -68,9 +70,11 @@ class Solis:
 
         return solis_production, solis_production, shot, notes
 
+
 if __name__ == "__main__":
     from dotenv import load_dotenv
     from playwright.sync_api import sync_playwright
+
     load_dotenv()
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)

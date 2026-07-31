@@ -24,12 +24,16 @@ def test_returns_env_value_when_set(monkeypatch):
 
 def test_vault_value_takes_precedence_over_env(monkeypatch):
     monkeypatch.setenv("SHARED_KEY", "env-value")
-    monkeypatch.setattr(secrets_util, "_load_vault_secret", lambda: FakeVault({"SHARED_KEY": "vault-value"}))
+    monkeypatch.setattr(
+        secrets_util, "_load_vault_secret", lambda: FakeVault({"SHARED_KEY": "vault-value"})
+    )
 
     assert secret_or_env("SHARED_KEY") == "vault-value"
 
 
-@pytest.mark.parametrize("vault_data", [{"SHARED_KEY": "  "}, {}], ids=["blank_value", "missing_key"])
+@pytest.mark.parametrize(
+    "vault_data", [{"SHARED_KEY": "  "}, {}], ids=["blank_value", "missing_key"]
+)
 def test_non_present_vault_value_falls_back_to_env(monkeypatch, vault_data):
     monkeypatch.setenv("SHARED_KEY", "env-value")
     monkeypatch.setattr(secrets_util, "_load_vault_secret", lambda: FakeVault(vault_data))
