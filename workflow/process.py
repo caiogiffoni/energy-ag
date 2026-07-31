@@ -69,7 +69,7 @@ class Process:
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
-    from playwright.sync_api import expect, sync_playwright
+    from playwright.sync_api import sync_playwright
 
     load_dotenv()
     with sync_playwright() as p:

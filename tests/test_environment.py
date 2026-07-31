@@ -27,16 +27,16 @@ REQUIRED_ENV_KEYS = {
 
 
 def test_all_modules_import_cleanly():
-    from workflow.process import Process
-    import workflow.weg  # noqa: F401
-    import workflow.saj  # noqa: F401
-    import workflow.solis  # noqa: F401
-    import workflow.growatt  # noqa: F401
-    import utils.utils  # noqa: F401
-    import utils.email_util  # noqa: F401
-    import utils.secrets_util  # noqa: F401
     import libraries.decorators  # noqa: F401
     import libraries.logger  # noqa: F401
+    import utils.email_util  # noqa: F401
+    import utils.secrets_util  # noqa: F401
+    import utils.utils  # noqa: F401
+    import workflow.growatt  # noqa: F401
+    import workflow.saj  # noqa: F401
+    import workflow.solis  # noqa: F401
+    import workflow.weg  # noqa: F401
+    from workflow.process import Process
 
     assert isinstance(Process, type)
 

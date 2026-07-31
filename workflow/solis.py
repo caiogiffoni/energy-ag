@@ -1,4 +1,6 @@
+import re
 from pathlib import Path
+from time import sleep
 
 from playwright.sync_api import expect
 
@@ -7,8 +9,6 @@ from libraries.logger import get_logger
 from utils.secrets_util import secret_or_env
 
 logger = get_logger(__name__)
-import re
-from time import sleep
 
 
 class Solis:
