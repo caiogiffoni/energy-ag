@@ -117,7 +117,7 @@ def test_send_generated_energy_email_skips_when_smtp_creds_unset(monkeypatch, tm
     mock_send.assert_not_called()
 
 
-def test_send_generated_energy_email_handles_non_numeric_production(monkeypatch, tmp_path):
+def test_send_generated_energy_email_skips_when_any_production_is_dash(monkeypatch, tmp_path):
     monkeypatch.setenv("EMAIL_TO", "ops@example.com")
     monkeypatch.setenv("SMTP_USER", "user@example.com")
     monkeypatch.setenv("SMTP_PASSWORD", "secret")
@@ -133,7 +133,4 @@ def test_send_generated_energy_email_handles_non_numeric_production(monkeypatch,
         growatt_info=("3.3", "", "", ""),
     )
 
-    mock_send.assert_called_once()
-    kwargs = mock_send.call_args.kwargs
-    assert kwargs["subject"] == "Weg: 10.5 kWh, II: 4.4 kWh"
-    assert "Solis production (kWh): --" in kwargs["body"]
+    mock_send.assert_not_called()
