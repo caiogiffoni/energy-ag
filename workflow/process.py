@@ -34,37 +34,46 @@ class Process:
 
         results = {}
         errors = {}
-        for key, scraper_class in [("weg", Weg), ("saj", Saj), ("solis", Solis)]:
+        # DEBUG: only run solis
+        for key, scraper_class in [("solis", Solis)]:
             try:
                 results[key] = scraper_class().get_production(page)
             except Exception as e:
                 logger.error("%s scraper failed - continuing with the rest: %s", key, e)
                 errors[key] = e
                 results[key] = ("", "", None, f"FAILED: {e}")
-        try:
-            results["growatt"] = Growatt().get_production()
-        except Exception as e:
-            logger.error("growatt scraper failed - continuing with the rest: %s", e)
-            errors["growatt"] = e
-            results["growatt"] = ("", "", None, f"FAILED: {e}")
+        # for key, scraper_class in [("weg", Weg), ("saj", Saj), ("solis", Solis)]:
+        #     try:
+        #         results[key] = scraper_class().get_production(page)
+        #     except Exception as e:
+        #         logger.error("%s scraper failed - continuing with the rest: %s", key, e)
+        #         errors[key] = e
+        #         results[key] = ("", "", None, f"FAILED: {e}")
+        # try:
+        #     results["growatt"] = Growatt().get_production()
+        # except Exception as e:
+        #     logger.error("growatt scraper failed - continuing with the rest: %s", e)
+        #     errors["growatt"] = e
+        #     results["growatt"] = ("", "", None, f"FAILED: {e}")
 
-        # Row goes out with blanks for failures
-        post_to_sheets(
-            weg=results["weg"][0],
-            saj=results["saj"][0],
-            solis=results["solis"][0],
-            growatt=results["growatt"][0],
-        )
+        # DEBUG: skip sheets and email
+        logger.info("DEBUG: skipping post_to_sheets and send_generated_energy_email")
+        # post_to_sheets(
+        #     weg=results["weg"][0],
+        #     saj=results["saj"][0],
+        #     solis=results["solis"][0],
+        #     growatt=results["growatt"][0],
+        # )
 
         if errors:
             logger.error(
-                "Scrapers failed (%s) - sheet row posted, email skipped", ", ".join(errors)
+                "DEBUG: Scrapers failed (%s) - email skipped", ", ".join(errors)
             )
             raise next(iter(errors.values()))
 
-        send_generated_energy_email(
-            results["weg"], results["saj"], results["solis"], results["growatt"]
-        )
+        # send_generated_energy_email(
+        #     results["weg"], results["saj"], results["solis"], results["growatt"]
+        # )
 
 
 if __name__ == "__main__":
