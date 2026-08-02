@@ -75,12 +75,15 @@ class Solis:
 
 
 if __name__ == "__main__":
+    import os
+
     from dotenv import load_dotenv
     from playwright.sync_api import sync_playwright
 
     load_dotenv()
+    headless = os.environ.get("HEADLESS", "true").lower() != "false"
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=headless)
         page = browser.new_page()
         solis = Solis()
         solis.get_production(page)
