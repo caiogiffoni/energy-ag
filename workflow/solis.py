@@ -49,7 +49,9 @@ class Solis:
                 1
             ).click()
         new_page = page1_info.value
-        production = new_page.locator("#echartsDay.my-echarts-box").filter(has_text=re.compile(r"Daily Yield"))
+        production = new_page.locator("#echartsDay.my-echarts-box").filter(
+            has_text=re.compile(r"Daily Yield")
+        )
 
         expect(production).to_be_visible(timeout=60000)
 
