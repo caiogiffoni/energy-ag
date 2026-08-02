@@ -49,16 +49,19 @@ class Solis:
                 1
             ).click()
         new_page = page1_info.value
-        production = new_page.locator(".energy-box")
+        production = new_page.locator("#echartsDay.my-echarts-box").filter(has_text=re.compile(r"Daily Yield"))
 
         expect(production).to_be_visible(timeout=60000)
 
-        solis_production = (
+        value_locator = (
             new_page.locator(".energy-analysis-item.date-pane")
             .filter(has_text=re.compile(r"Daily Yield"))
             .locator(".date-num span")
-            .first.inner_text()
+            .first
         )
+        # Wait for the cloud value to finish loading (it may briefly show "--").
+        expect(value_locator).not_to_have_text("--", timeout=30000)
+        solis_production = value_locator.inner_text()
         logger.info("Solis production: %s kWh", solis_production)
 
         out = Path(secret_or_env("ROBOT_ARTIFACTS", "output"))

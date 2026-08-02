@@ -53,11 +53,8 @@ def post_to_sheets(weg, saj, solis, growatt):
     logger.info("Posted to Google Sheets row %d", row_num)
 
 
-def _to_float(value: str | None) -> float:
-    try:
-        return float(value or "")
-    except (ValueError, TypeError):
-        return 0.0
+def _normalize_production(value: str | None) -> str:
+    return "0" if value == "--" else value or "0"
 
 
 def send_generated_energy_email(
@@ -83,16 +80,11 @@ def send_generated_energy_email(
     if not smtp_user or not smtp_password:
         logger.info("SMTP_USER or SMTP_PASSWORD not set - email skipped")
         return
-    for name, value in [
-        ("saj", saj_production),
-        ("solis", solis_production),
-        ("growatt", growatt_production),
-    ]:
-        if value == "--":
-            logger.warning("%s production is '--' - email skipped", name)
-            return
+    saj_production = _normalize_production(saj_production)
+    solis_production = _normalize_production(solis_production)
+    growatt_production = _normalize_production(growatt_production)
     inversor2 = round(
-        _to_float(saj_production) + _to_float(solis_production) + _to_float(growatt_production), 2
+        float(saj_production) + float(solis_production) + float(growatt_production), 2
     )
     notes_entries = [
         ("weg", weg_notes),
