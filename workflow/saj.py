@@ -40,7 +40,9 @@ class Saj:
 
         logger.info("Waiting for dashboard column")
         curve_card = page.locator(".plant-chart-card").filter(has_text="Curve Analysis")
-        production = curve_card.locator("div").filter(has_text="Total production").locator("span.text-2xl")
+        production = (
+            curve_card.locator("div").filter(has_text="Total production").locator("span.text-2xl")
+        )
         expect(production).to_be_visible(timeout=timeout)
 
         saj_production = production.inner_text()
